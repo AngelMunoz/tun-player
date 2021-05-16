@@ -1,22 +1,24 @@
 lockfileVersion: 5.3
 
 specifiers:
+  '@adobe/lit-mobx': 2.0.0-rc.4
   '@babel/plugin-proposal-class-properties': ^7.13.0
-  '@babel/plugin-proposal-decorators': ^7.13.15
+  '@babel/plugin-proposal-decorators': ^7.14.2
   '@babel/preset-typescript': ^7.13.0
   '@snowpack/plugin-babel': ^2.1.7
   '@snowpack/plugin-dotenv': ^2.1.0
   '@snowpack/plugin-typescript': ^1.2.1
   '@types/snowpack-env': ^2.3.3
-  lit-element: ^2.4.0
-  lit-html: ^1.4.0
-  prettier: ^2.2.1
-  snowpack: ^3.3.7
+  lit: 2.0.0-rc.2
+  mobx: ~6.3.0
+  prettier: ^2.3.0
+  snowpack: ^3.4.0
   typescript: ^4.2.4
 
 dependencies:
-  lit-element: 2.5.1
-  lit-html: 1.4.1
+  '@adobe/lit-mobx': 2.0.0-rc.4_lit@2.0.0-rc.2+mobx@6.3.0
+  lit: 2.0.0-rc.2
+  mobx: 6.3.0
 
 devDependencies:
   '@babel/plugin-proposal-class-properties': 7.13.0
@@ -27,10 +29,20 @@ devDependencies:
   '@snowpack/plugin-typescript': 1.2.1_typescript@4.2.4
   '@types/snowpack-env': 2.3.3
   prettier: 2.3.0
-  snowpack: 3.3.7
+  snowpack: 3.4.0
   typescript: 4.2.4
 
 packages:
+
+  /@adobe/lit-mobx/2.0.0-rc.4_lit@2.0.0-rc.2+mobx@6.3.0:
+    resolution: {integrity: sha512-LvhKnFe250ti57v6awOct9YaM7i6PH3Oj02iA/+zve9JywTuIS9g0f2dqPwOVBmAUWP6ONlxCMzpNVQ/BS8ctw==}
+    peerDependencies:
+      lit: ^2.0.0 || ^2.0.0-rc.1
+      mobx: ^5.0.0 || ^6.0.0
+    dependencies:
+      lit: 2.0.0-rc.2
+      mobx: 6.3.0
+    dev: false
 
   /@babel/code-frame/7.12.13:
     resolution: {integrity: sha512-HV1Cm0Q3ZrpCR93tkWOYiuYIgLxZXZFVG2VgK+MBWjUqZTundupbfx2aXarXuw5Ko5aMcjtJgbSs4vUGBS5v6g==}
@@ -305,6 +317,10 @@ packages:
       to-fast-properties: 2.0.0
     dev: true
 
+  /@lit/reactive-element/1.0.0-rc.2:
+    resolution: {integrity: sha512-cujeIl5Ei8FC7UHf4/4Q3bRJOtdTe1vpJV/JEBYCggedmQ+2P8A2oz7eE+Vxi6OJ4nc0X+KZxXnBoH4QrEbmEQ==}
+    dev: false
+
   /@npmcli/git/2.0.9:
     resolution: {integrity: sha512-hTMbMryvOqGLwnmMBKs5usbPsJtyEsMsgXwJbmNrsEuQQh1LAIMDU77IoOrwkCg+NgQWl+ySlarJASwM3SutCA==}
     dependencies:
@@ -389,6 +405,10 @@ packages:
   /@types/snowpack-env/2.3.3:
     resolution: {integrity: sha512-riJuu2fR3qhBfpWJtqQtNwYJFvquiXfqdprXvZjSNmscnZbIVyHoM49ZVEM1bciKM1mWOCdjXymOYHyGh2WLtg==}
     dev: true
+
+  /@types/trusted-types/1.0.6:
+    resolution: {integrity: sha512-230RC8sFeHoT6sSUlRO6a8cAnclO06eeiq1QDfiv2FGCLWFvvERWgwIQD4FWqD9A69BN7Lzee4OXwoMVnnsWDw==}
+    dev: false
 
   /abbrev/1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
@@ -512,9 +532,9 @@ packages:
     dependencies:
       caniuse-lite: 1.0.30001228
       colorette: 1.2.2
-      electron-to-chromium: 1.3.727
+      electron-to-chromium: 1.3.728
       escalade: 3.1.1
-      node-releases: 1.1.71
+      node-releases: 1.1.72
     dev: true
 
   /builtins/1.0.3:
@@ -687,8 +707,8 @@ packages:
       safer-buffer: 2.1.2
     dev: true
 
-  /electron-to-chromium/1.3.727:
-    resolution: {integrity: sha512-Mfz4FIB4FSvEwBpDfdipRIrwd6uo8gUDoRDF4QEYb4h4tSuI3ov594OrjU6on042UlFHouIJpClDODGkPcBSbg==}
+  /electron-to-chromium/1.3.728:
+    resolution: {integrity: sha512-SHv4ziXruBpb1Nz4aTuqEHBYi/9GNCJMYIJgDEXrp/2V01nFXMNFUTli5Z85f5ivSkioLilQatqBYFB44wNJrA==}
     dev: true
 
   /encoding/0.1.13:
@@ -1080,14 +1100,25 @@ packages:
       verror: 1.10.0
     dev: true
 
-  /lit-element/2.5.1:
-    resolution: {integrity: sha512-ogu7PiJTA33bEK0xGu1dmaX5vhcRjBXCFexPja0e7P7jqLhTpNKYRPmE+GmiCaRVAbiQKGkUgkh/i6+bh++dPQ==}
+  /lit-element/3.0.0-rc.2:
+    resolution: {integrity: sha512-2Z7DabJ3b5K+p5073vFjMODoaWqy5PIaI4y6ADKm+fCGc8OnX9fU9dMoUEBZjFpd/bEFR9PBp050tUtBnT9XTQ==}
     dependencies:
-      lit-html: 1.4.1
+      '@lit/reactive-element': 1.0.0-rc.2
+      lit-html: 2.0.0-rc.3
     dev: false
 
-  /lit-html/1.4.1:
-    resolution: {integrity: sha512-B9btcSgPYb1q4oSOb/PrOT6Z/H+r6xuNzfH4lFli/AWhYwdtrgQkQWBbIc6mdnf6E2IL3gDXdkkqNktpU0OZQA==}
+  /lit-html/2.0.0-rc.3:
+    resolution: {integrity: sha512-Y6P8LlAyQuqvzq6l/Nc4z5/P5M/rVLYKQIRxcNwSuGajK0g4kbcBFQqZmgvqKG+ak+dHZjfm2HUw9TF5N/pkCw==}
+    dependencies:
+      '@types/trusted-types': 1.0.6
+    dev: false
+
+  /lit/2.0.0-rc.2:
+    resolution: {integrity: sha512-BOCuoJR04WaTV8UqTKk09cNcQA10Aq2LCcBOiHuF7TzWH5RNDsbCBP5QM9sLBSotGTXbDug/gFO08jq6TbyEtw==}
+    dependencies:
+      '@lit/reactive-element': 1.0.0-rc.2
+      lit-element: 3.0.0-rc.2
+      lit-html: 2.0.0-rc.3
     dev: false
 
   /lru-cache/6.0.0:
@@ -1218,6 +1249,10 @@ packages:
     hasBin: true
     dev: true
 
+  /mobx/6.3.0:
+    resolution: {integrity: sha512-Aa1+VXsg4WxqJMTQfWoYuJi5UD10VZhiobSmcs5kcmI3BIT0aVtn7DysvCeDADCzl7dnbX+0BTHUj/v7gLlZpQ==}
+    dev: false
+
   /ms/2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
     dev: true
@@ -1243,8 +1278,8 @@ packages:
       which: 2.0.2
     dev: true
 
-  /node-releases/1.1.71:
-    resolution: {integrity: sha512-zR6HoT6LrLCRBwukmrVbHv0EpEQjksO6GmFcZQQuCAy139BEsoVKPYnf3jongYW83fAa1torLGYwxxky/p28sg==}
+  /node-releases/1.1.72:
+    resolution: {integrity: sha512-LLUo+PpH3dU6XizX3iVoubUNheF/owjXCZZ5yACDxNnPtgFuludV1ZL3ayK1kVep42Rmm0+R9/Y60NQbZ2bifw==}
     dev: true
 
   /nopt/5.0.0:
@@ -1595,8 +1630,8 @@ packages:
     engines: {node: '>= 6.0.0', npm: '>= 3.0.0'}
     dev: true
 
-  /snowpack/3.3.7:
-    resolution: {integrity: sha512-7I5wznB6wGKq2fi6pxU3UZLEe3R0a5IChO8x+w0iYT7/oERubkbzc/SXTMXm6lVvtYMs2W1AkE+0VHP1KI0IEw==}
+  /snowpack/3.4.0:
+    resolution: {integrity: sha512-11kiRbqbmagFagjxYB9V3L0stZq7G9mkaaUCwSDbHj2YLc3zWKuOoBCeWAPwQeUCGMEFadHaftJmPttUBujKcw==}
     engines: {node: '>=10.19.0'}
     hasBin: true
     dependencies:

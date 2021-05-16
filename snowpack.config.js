@@ -25,6 +25,8 @@ module.exports = {
   },
   packageOptions: {
     /* ... */
+    source: 'remote',
+    types: true
   },
   devOptions: {
     /* ... */
