@@ -1,11 +1,8 @@
-import { observable, action, makeAutoObservable, flow, runInAction } from 'mobx'
-import { selectFiles } from '../services/file-reader';
-import type { FileWithHandle, Page } from '../types';
+import { observable, action, makeAutoObservable } from 'mobx'
+import type { Page } from '../types';
 
 
 class AppStore {
-    @observable
-    _index?: number;
 
     @observable
     page: Page = 'Home';
@@ -13,24 +10,8 @@ class AppStore {
     @observable
     title = "Tun Player"
 
-    @observable
-    currentSong?: FileWithHandle;
-
-    @observable
-    playlist: FileWithHandle[] = [];
-
     constructor() {
         makeAutoObservable(this);
-    }
-
-    @flow
-    *loadSongs(): Generator<Promise<FileWithHandle[]>, void, FileWithHandle[]> {
-        try {
-            const files = yield selectFiles();
-            this.playlist.push(...files);
-        } catch (error) {
-            console.warn(error)
-        }
     }
 
     @action
@@ -43,33 +24,6 @@ class AppStore {
         if (!title) { this.title = "Tun Player"; return; }
         this.title = `Tun Player | ${title}`;
     }
-
-    @action
-    setFile(file: FileWithHandle) {
-        if (!file) return;
-        const index = this.playlist.findIndex(f => f.name === file.name);
-        this.currentSong = file;
-        this._index = index;
-    }
-
-    @action
-    nextSong() {
-        const song = this.playlist[(this._index ?? -2) + 1];
-        if (!song) return;
-        this._index = this._index as number + 1;
-        this.currentSong = song;
-        return song;
-    }
-
-    @action
-    previousSong() {
-        const song = this.playlist[(this._index ?? -1) - 1];
-        if (!song) return;
-        this._index = this._index as number - 1;
-        this.currentSong = song;
-        return song;
-    }
-
 
 }
 

@@ -1,5 +1,5 @@
 export type Page = 'Home' | 'Preferences';
-
+export type SongRequest = 'Previous' | 'Next' | 'Current';
 export interface FileWithHandle extends File {
     handle?: FileSystemHandle;
 }

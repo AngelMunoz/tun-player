@@ -1,11 +1,17 @@
 import { html, css, LitElement } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { PlayerService } from '../services/player.service';
-import type { FileWithHandle } from '../types';
+import type { FileWithHandle, SongRequest } from '../types';
+import PubSub from '../services/pub-sub.service';
+import type { Subscription } from 'rxjs';
+import { PubSubEvents } from '../enums';
 
 @customElement('tun-player')
 export class TunPlayer extends LitElement {
   private _player: PlayerService = new PlayerService();
+  private $pb = PubSub;
+
+  private subs: Subscription[] = [];
 
   @state()
   private _song?: FileWithHandle;
@@ -21,7 +27,6 @@ export class TunPlayer extends LitElement {
 
   public setSong(song?: FileWithHandle) {
     this._song = song;
-    this.requestUpdate()
   }
 
   public async play(): Promise<boolean> {
@@ -30,7 +35,7 @@ export class TunPlayer extends LitElement {
       await this._player.play(this.song);
       return true;
     } catch (error) {
-      console.warn(`tun-player [play]: ${error.mesage}`)
+      console.warn(`tun-player [play]: ${error.message}`)
       return false;
     }
   }
@@ -41,7 +46,7 @@ export class TunPlayer extends LitElement {
       this._player.pause();
       return true;
     } catch (error) {
-      console.warn(`tun-player [pause]: ${error.mesage}`)
+      console.warn(`tun-player [pause]: ${error.message}`)
       return false;
     }
   }
@@ -52,7 +57,7 @@ export class TunPlayer extends LitElement {
       this.setSong();
       return true;
     } catch (error) {
-      console.warn(`tun-player [stop]: ${error.mesage}`)
+      console.warn(`tun-player [stop]: ${error.message}`)
       return false
     }
   }
@@ -62,56 +67,46 @@ export class TunPlayer extends LitElement {
       this._player.seek(pos);
       return true;
     } catch (error) {
-      console.warn(`tun-player [seek]: ${error.mesage}`)
+      console.warn(`tun-player [seek]: ${error.message}`)
       return false;
     }
   }
 
   public requestPrevious() {
-    const evt = new Event('on-request-previous', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-    });
-    this.dispatchEvent(evt);
+    this.$pb.publish<SongRequest>(PubSubEvents.RequestSong, 'Previous')
   }
 
   public requestNext() {
-    const evt = new Event('on-request-next', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-    });
-    this.dispatchEvent(evt);
+    this.$pb.publish<SongRequest>(PubSubEvents.RequestSong, 'Next')
   }
 
   get song(): FileWithHandle | undefined {
     return this._song;
   }
 
+  private _playFromSub = async (song: FileWithHandle) => {
+    this._song = song;
+    await this.play();
+  }
+
   private _onPlay = (event: Event) => {
     this.isPlaying = true;
-    this.requestUpdate();
   }
   private _onPause = (event: Event) => {
     this.isPlaying = false;
-    this.requestUpdate();
   }
   private _onEnded = (event: Event) => {
     this.isPlaying = false;
-    this.requestUpdate();
   }
 
   private _onDurationChange = (event: Event) => {
     const target = (event.target as HTMLAudioElement)
     this._songDuration = target.duration;
-    this.requestUpdate()
   }
 
   private _onTimeUpdate = (event: Event) => {
     const target = (event.target as HTMLAudioElement);
     this._position = target.currentTime;
-    this.requestUpdate()
   }
 
   render() {
@@ -150,6 +145,7 @@ export class TunPlayer extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+    this.subs.push(this.$pb.subscribe<FileWithHandle>(PubSubEvents.PlaySong, this._playFromSub));
     this._player.player.addEventListener('play', this._onPlay)
     this._player.player.addEventListener('pause', this._onPause)
     this._player.player.addEventListener('ended', this._onEnded)
@@ -164,5 +160,8 @@ export class TunPlayer extends LitElement {
     this._player.player.removeEventListener('ended', this._onPlay)
     this._player.player.removeEventListener('durationchange', this._onDurationChange)
     this._player.player.removeEventListener('timeupdate', this._onTimeUpdate)
+    for (const sub of this.subs) {
+      sub.unsubscribe();
+    }
   }
 }

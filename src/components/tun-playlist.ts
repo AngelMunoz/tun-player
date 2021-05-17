@@ -1,86 +1,157 @@
-import { MobxLitElement } from '@adobe/lit-mobx';
 import { html, css, LitElement } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, eventOptions, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat'
-import type { FileWithHandle } from '../types';
+import { classMap } from 'lit/directives/class-map'
+import type { Subscription } from 'rxjs';
+import { PubSubEvents } from '../enums';
+import { selectFiles } from '../services/file-reader';
+import PubSub from '../services/pub-sub.service';
+import type { FileWithHandle, SongRequest } from '../types';
 
 @customElement('tun-playlist')
-export class TunPlaylist extends MobxLitElement {
+export class TunPlaylist extends LitElement {
+  private $pb = PubSub;
+  private subs: Subscription[] = [];
 
-  @property({ type: Array })
-  playlist: FileWithHandle[] = [];
+  @state()
+  private _playlist: FileWithHandle[] = [];
+  @state()
+  private _selected = -1;
 
-  selectSong(file: FileWithHandle) {
-    this.dispatchEvent(new CustomEvent('on-select-song', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-      detail: file
-    }));
+  constructor() {
+    super();
+    this.subs.push(this.$pb.subscribe<SongRequest>(PubSubEvents.RequestSong, this._onRequestedFromSub));
   }
 
-  setSelected(eventOrElement: Event | HTMLLIElement, file: FileWithHandle) {
-    let target: HTMLLIElement;
-    if (eventOrElement instanceof Event || eventOrElement instanceof EventTarget) {
-      target = ((eventOrElement as Event).target as HTMLLIElement);
-    } else {
-      target = eventOrElement as HTMLLIElement;
+  async loadSongs() {
+    try {
+      this._playlist = await selectFiles();
+    } catch (error) {
+      console.warn(`tun-playlist [load songs]: ${error.message}`);
     }
-    const lis = this.renderRoot.querySelectorAll('li.selected');
-    for (const li of lis) {
-      li.classList.remove('selected');
-    }
-    target.classList.add('selected');
-    this.selectSong(file);
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    this.addEventListener('keyup', this._checkForEnter);
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    this.removeEventListener('keyup', this._checkForEnter);
+  selectAndPlay(index: number, file: FileWithHandle) {
+    if (index < 0 || this._selected >= this._playlist.length || !file) return;
+    this._selected = index;
+    this.$pb.publish(PubSubEvents.PlaySong, file)
   }
 
   private _checkForEnter(event: KeyboardEvent) {
-    if (event.key !== 'Enter') { return; }
+    if (!['Enter', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.selectAndPlay(this._selected, this._playlist[this._selected]);
+    }
+    if (['ArrowDown', 'ArrowRight'].includes(event.key)) {
+      event.preventDefault();
+      if (this._selected >= this._playlist.length) return;
+      this._selected++;
+    }
+    if (['ArrowUp', 'ArrowLeft'].includes(event.key)) {
+      event.preventDefault();
+      if (this._selected < 0) return;
+      this._selected--;
+    }
+  }
 
-    const el = this.renderRoot.querySelector('li.selected') as HTMLLIElement | undefined;
-    if (!el) return;
-    const filename = el.dataset.filename;
-    if (!filename) return;
-    const file = this.playlist.find(f => f.name === filename);
-    if (!file) return;
-    this.setSelected(el, file);
+  private _onRequestedFromSub = (kind: SongRequest) => {
+    switch (kind) {
+      case 'Current':
+        this.selectAndPlay(this._selected, this._playlist[this._selected]);
+        break;
+      case 'Previous':
+        if (this._selected <= 0) return;
+        this._selected--;
+        this.selectAndPlay(this._selected, this._playlist[this._selected]);
+        break;
+      case 'Next':
+        if (this._selected >= this._playlist.length) return;
+        this._selected++;
+        this.selectAndPlay(this._selected, this._playlist[this._selected]);
+        break;
+    }
   }
 
   render() {
     return html`
-        <ul>
-        ${repeat(this.playlist,
-      file =>
+        <header>
+          <p>
+            Playlist
+          </p>
+          <menu>
+            <button tabindex="0" @click="${() => this.loadSongs()}">Add Items</button>
+          </menu>
+        </header>
+        <ul
+          tabindex="1"
+          @keyup="${this._checkForEnter}"
+          @click="${(e: Event) => (this._selected = Number((e.target as Element).getAttribute('key')))}">
+        ${repeat(this._playlist,
+      (file, index) =>
         html`
-            <li 
-                @focus="${(e: Event) => (e.target as HTMLLIElement).classList.toggle('selected')}"
-                @dblclick="${(event: Event) => this.setSelected(event, file)}"
-                data-filename="${file.name}">
+            <li
+                key=${index}
+                @dblclick="${() => this.selectAndPlay(index, file)}"
+                class="${classMap({ selected: this._selected === index })}">
                   ${file.name}
             </li>
             `)}
         </ul>
+        <footer>
+          Tun Player &copy; 2021
+        </footer>
     `;
   }
 
   static get styles() {
     return css`
-      li {
+
+      :host {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        padding: 0.5em;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header p {
+        flex: 0 1;
+      }
+
+      header menu {
+        flex: 1 0;
+        padding: 0;
+      }
+
+      ul {
+        flex: 2 0;
+        padding: 0
+      }
+      ul li {
         cursor: pointer;
       }
-      li.selected {
+
+      ul li.selected {
         background-color: #abc123f0
       }
+      footer {
+        position: sticky;
+        bottom: 0;
+      }
     `;
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    for (const sub of this.subs) {
+      sub.unsubscribe();
+    }
   }
 }

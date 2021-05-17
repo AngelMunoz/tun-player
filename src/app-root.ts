@@ -1,66 +1,71 @@
 import { html, css, LitElement } from 'lit';
-import { customElement, property, query } from 'lit/decorators.js';
-import { MobxLitElement } from '@adobe/lit-mobx';
-import AppStore from './stores/app.store';
-import type { FileWithHandle, Page } from './types';
-import type { TunPlayer, TunPlaylist } from './components';
+import { customElement, state } from 'lit/decorators.js';
+import type { Page } from './types';
 
 @customElement('app-root')
-export class AppRoot extends MobxLitElement {
+export class AppRoot extends LitElement {
 
-  private $store = AppStore;
-
-  get tunPlayer(): TunPlayer | undefined {
-    return this.renderRoot.querySelector('tun-player') as TunPlayer
-  }
-
-  get tunPlaylist(): TunPlaylist | undefined {
-    return this.renderRoot.querySelector('tun-playlist') as TunPlaylist
-  }
+  private page?: Page = 'Home';
 
   selectPage(page: Page) {
     switch (page) {
       case 'Home':
         return html`<tun-home></tun-home>`;
       case 'Preferences':
-        return html`<tun-settings></tun-settings>`
+        return html`<tun-settings></tun-settings>`;
       default:
-        return html`<header>
+        return html`
+        <header>
           <h1>Not Found</h1>
-        </header>`
+        </header>
+        `;
     }
   }
-
-  async selectFiles() {
-    await (this.$store.loadSongs() as unknown) as Promise<void>;
-  }
-
-  selectSong(e: CustomEvent<FileWithHandle>) {
-    this.$store.setFile(e.detail);
-    this.tunPlayer?.setSong(this.$store.currentSong)
-  }
-
-  nextRequested() {
-    this.$store.nextSong();
-    this.tunPlayer?.setSong(this.$store.currentSong);
-    this.tunPlayer?.play();
-  }
-
-  backRequested() {
-    this.$store.previousSong();
-    this.tunPlayer?.setSong(this.$store.currentSong);
-    this.tunPlayer?.play();
-  }
-
-
   render() {
     return html`
       <article>
-        <button @click="${this.selectFiles}">Load Files</button>
-        <tun-playlist @on-select-song=${this.selectSong} .playlist="${this.$store.playlist}"></tun-playlist>
-        <main @on-change-page="${(e: CustomEvent<Page>) => this.$store.setPage(e?.detail)}">${this.selectPage(this.$store.page)}</main>
-        <tun-player @on-request-next="${this.nextRequested}" @on-request-previous="${this.backRequested}"></tun-player>
+        <main @on-change-page="${(e: CustomEvent<Page>) => (this.page = e?.detail)}">${this.selectPage(this.page ?? 'Home')}</main>
+        <tun-playlist></tun-playlist>
+        <tun-player></tun-player>
       </article>
     `;
   }
+
+  public static get styles() {
+    return css`
+      article {
+        height: 100vh;
+        overflow: none;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: 1fr 0.1fr;
+        grid-template-areas:
+          'main main playlist'
+          'player player playlist';
+        gap: 1em;
+        align-items: center;
+      }
+
+      tun-player {
+        grid-area: player;
+        align-self: flex-end;
+        justify-self: stretch;
+        height: 100%;
+        border: 2px dashed gray;
+      }
+      tun-playlist {
+        grid-area: playlist;
+        height: 100%;
+        border: 2px dashed gray;
+      }
+      main {
+        grid-area: main;
+        overflow-y: auto;
+        height: 100%;
+        border: 2px dashed gray;
+      }
+    `;
+  }
+
+
 }

@@ -1,7 +1,6 @@
 lockfileVersion: 5.3
 
 specifiers:
-  '@adobe/lit-mobx': 2.0.0-rc.4
   '@babel/plugin-proposal-class-properties': ^7.13.0
   '@babel/plugin-proposal-decorators': ^7.14.2
   '@babel/preset-typescript': ^7.13.0
@@ -10,15 +9,14 @@ specifiers:
   '@snowpack/plugin-typescript': ^1.2.1
   '@types/snowpack-env': ^2.3.3
   lit: 2.0.0-rc.2
-  mobx: ~6.3.0
   prettier: ^2.3.0
+  rxjs: ^7.0.1
   snowpack: ^3.4.0
   typescript: ^4.2.4
 
 dependencies:
-  '@adobe/lit-mobx': 2.0.0-rc.4_lit@2.0.0-rc.2+mobx@6.3.0
   lit: 2.0.0-rc.2
-  mobx: 6.3.0
+  rxjs: 7.0.1
 
 devDependencies:
   '@babel/plugin-proposal-class-properties': 7.13.0
@@ -33,16 +31,6 @@ devDependencies:
   typescript: 4.2.4
 
 packages:
-
-  /@adobe/lit-mobx/2.0.0-rc.4_lit@2.0.0-rc.2+mobx@6.3.0:
-    resolution: {integrity: sha512-LvhKnFe250ti57v6awOct9YaM7i6PH3Oj02iA/+zve9JywTuIS9g0f2dqPwOVBmAUWP6ONlxCMzpNVQ/BS8ctw==}
-    peerDependencies:
-      lit: ^2.0.0 || ^2.0.0-rc.1
-      mobx: ^5.0.0 || ^6.0.0
-    dependencies:
-      lit: 2.0.0-rc.2
-      mobx: 6.3.0
-    dev: false
 
   /@babel/code-frame/7.12.13:
     resolution: {integrity: sha512-HV1Cm0Q3ZrpCR93tkWOYiuYIgLxZXZFVG2VgK+MBWjUqZTundupbfx2aXarXuw5Ko5aMcjtJgbSs4vUGBS5v6g==}
@@ -1249,10 +1237,6 @@ packages:
     hasBin: true
     dev: true
 
-  /mobx/6.3.0:
-    resolution: {integrity: sha512-Aa1+VXsg4WxqJMTQfWoYuJi5UD10VZhiobSmcs5kcmI3BIT0aVtn7DysvCeDADCzl7dnbX+0BTHUj/v7gLlZpQ==}
-    dev: false
-
   /ms/2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
     dev: true
@@ -1580,6 +1564,12 @@ packages:
       fsevents: 2.1.3
     dev: true
 
+  /rxjs/7.0.1:
+    resolution: {integrity: sha512-wViQ4Vgps1xJwqWIBooMNN44usCSthL7wCUl4qWqrVjhGfWyVyXcxlYzfDKkJKACQvZMTOft/jJ3RkbwK1j9QQ==}
+    dependencies:
+      tslib: 2.1.0
+    dev: false
+
   /safe-buffer/5.1.2:
     resolution: {integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==}
     dev: true
@@ -1755,6 +1745,10 @@ packages:
       psl: 1.8.0
       punycode: 2.1.1
     dev: true
+
+  /tslib/2.1.0:
+    resolution: {integrity: sha512-hcVC3wYEziELGGmEEXue7D75zbwIIVUMWAVbHItGPx0ziyXxrOMQx4rQEVEV45Ut/1IotuEvwqPopzIOkDMf0A==}
+    dev: false
 
   /tunnel-agent/0.6.0:
     resolution: {integrity: sha1-J6XeoGs2sEoKmWZ3SykIaPD8QP0=}
