@@ -24,6 +24,6 @@ export class PlayerService {
     }
 
     seek(position: number) {
-        this.player.fastSeek(position);
+        this.player.currentTime = position;
     }
 }

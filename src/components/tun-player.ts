@@ -28,7 +28,6 @@ export class TunPlayer extends LitElement {
     if (!this.song) return false;
     try {
       await this._player.play(this.song);
-      this.requestUpdate()
       return true;
     } catch (error) {
       console.warn(`tun-player [play]: ${error.mesage}`)
@@ -40,7 +39,6 @@ export class TunPlayer extends LitElement {
     if (!this.song) return;
     try {
       this._player.pause();
-      this.requestUpdate()
       return true;
     } catch (error) {
       console.warn(`tun-player [pause]: ${error.mesage}`)
@@ -52,7 +50,6 @@ export class TunPlayer extends LitElement {
     try {
       this._player.stop();
       this.setSong();
-      this.requestUpdate()
       return true;
     } catch (error) {
       console.warn(`tun-player [stop]: ${error.mesage}`)
@@ -63,7 +60,6 @@ export class TunPlayer extends LitElement {
   public seek(pos: number) {
     try {
       this._player.seek(pos);
-      this.requestUpdate()
       return true;
     } catch (error) {
       console.warn(`tun-player [seek]: ${error.mesage}`)
@@ -93,26 +89,26 @@ export class TunPlayer extends LitElement {
     return this._song;
   }
 
-  private _onPlay(event: Event) {
+  private _onPlay = (event: Event) => {
     this.isPlaying = true;
     this.requestUpdate();
   }
-  private _onPause(event: Event) {
+  private _onPause = (event: Event) => {
     this.isPlaying = false;
     this.requestUpdate();
   }
-  private _onEnded(event: Event) {
+  private _onEnded = (event: Event) => {
     this.isPlaying = false;
     this.requestUpdate();
   }
 
-  private _onDurationChange(event: Event) {
+  private _onDurationChange = (event: Event) => {
     const target = (event.target as HTMLAudioElement)
     this._songDuration = target.duration;
     this.requestUpdate()
   }
 
-  private _onTimeUpdate(event: Event) {
+  private _onTimeUpdate = (event: Event) => {
     const target = (event.target as HTMLAudioElement);
     this._position = target.currentTime;
     this.requestUpdate()
@@ -126,7 +122,7 @@ export class TunPlayer extends LitElement {
         ${this.isPlaying ? html`<button @click="${() => { this.pause() }}">Pause</button>` : html`<button @click="${() => { this.play() }}">Play</button>`}
         <button @click="${this.requestNext}">Next</button>
       </section>
-      <meter min="0" .max="${this._songDuration}" .value=${this._position}></meter>
+      <input type="range" min="0" .max="${this._songDuration.toString()}" .value=${this._position.toString()} @change="${(e: Event) => this.seek(Number((e.target as HTMLInputElement).value))}" />
       <section>${this.song?.name}</section>
     </nav>
     `;
@@ -154,19 +150,19 @@ export class TunPlayer extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this._player.player.addEventListener('play', this._onPlay.bind(this))
-    this._player.player.addEventListener('pause', this._onPause.bind(this))
-    this._player.player.addEventListener('ended', this._onEnded.bind(this))
-    this._player.player.addEventListener('durationchange', this._onDurationChange.bind(this))
-    this._player.player.addEventListener('timeupdate', this._onTimeUpdate.bind(this))
+    this._player.player.addEventListener('play', this._onPlay)
+    this._player.player.addEventListener('pause', this._onPause)
+    this._player.player.addEventListener('ended', this._onEnded)
+    this._player.player.addEventListener('durationchange', this._onDurationChange)
+    this._player.player.addEventListener('timeupdate', this._onTimeUpdate)
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this._player.player.removeEventListener('play', this._onPlay.bind(this))
-    this._player.player.removeEventListener('pause', this._onPause.bind(this))
-    this._player.player.removeEventListener('ended', this._onPlay.bind(this))
-    this._player.player.removeEventListener('durationchange', this._onDurationChange.bind(this))
-    this._player.player.removeEventListener('timeupdate', this._onTimeUpdate.bind(this))
+    this._player.player.removeEventListener('play', this._onPlay)
+    this._player.player.removeEventListener('pause', this._onPause)
+    this._player.player.removeEventListener('ended', this._onPlay)
+    this._player.player.removeEventListener('durationchange', this._onDurationChange)
+    this._player.player.removeEventListener('timeupdate', this._onTimeUpdate)
   }
 }
