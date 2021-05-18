@@ -8,6 +8,7 @@ specifiers:
   '@snowpack/plugin-dotenv': ^2.1.0
   '@snowpack/plugin-typescript': ^1.2.1
   '@types/snowpack-env': ^2.3.3
+  idb-keyval: ^5.0.5
   lit: 2.0.0-rc.2
   prettier: ^2.3.0
   rxjs: ^7.0.1
@@ -15,6 +16,7 @@ specifiers:
   typescript: ^4.2.4
 
 dependencies:
+  idb-keyval: 5.0.5
   lit: 2.0.0-rc.2
   rxjs: 7.0.1
 
@@ -948,6 +950,10 @@ packages:
       safer-buffer: 2.1.2
     dev: true
     optional: true
+
+  /idb-keyval/5.0.5:
+    resolution: {integrity: sha512-cqi65rrjhgPExI9vmSU7VcYEbHCUfIBY+9YUWxyr0PyGizptFgGFnvZQ0w+tqOXk1lUcGCZGVLfabf7QnR2S0g==}
+    dev: false
 
   /ignore-walk/3.0.4:
     resolution: {integrity: sha512-PY6Ii8o1jMRA1z4F2hRkH/xN59ox43DavKvD3oDpfurRlOJyAHpifIwpbdv1n4jt4ov0jSpw3kQ4GhJnpBL6WQ==}

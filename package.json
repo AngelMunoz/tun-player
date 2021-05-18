@@ -7,6 +7,7 @@
     "lint": "prettier --check \"src/**/*.ts\""
   },
   "dependencies": {
+    "idb-keyval": "^5.0.5",
     "lit": "2.0.0-rc.2",
     "rxjs": "^7.0.1"
   },

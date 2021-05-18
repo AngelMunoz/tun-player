@@ -1,10 +1,10 @@
 import { html, css, LitElement } from 'lit';
 import { customElement, eventOptions, state } from 'lit/decorators.js';
-import { repeat } from 'lit/directives/repeat'
-import { classMap } from 'lit/directives/class-map'
+import { repeat } from 'lit/directives/repeat';
+import { classMap } from 'lit/directives/class-map';
 import type { Subscription } from 'rxjs';
 import { PubSubEvents } from '../enums';
-import { selectFiles } from '../services/file-reader';
+import { getPlaylist, savePlaylist, selectFiles } from '../services/file-reader';
 import PubSub from '../services/pub-sub.service';
 import type { FileWithHandle, SongRequest } from '../types';
 
@@ -20,7 +20,10 @@ export class TunPlaylist extends LitElement {
 
   constructor() {
     super();
-    this.subs.push(this.$pb.subscribe<SongRequest>(PubSubEvents.RequestSong, this._onRequestedFromSub));
+    this.subs.push(
+      this.$pb.subscribe<SongRequest>(PubSubEvents.RequestSong, this._onRequestedFromSub),
+      this.$pb.subscribe<string>(PubSubEvents.LoadPlaylist, this.loadPlaylist)
+    );
   }
 
   async loadSongs() {
@@ -31,10 +34,26 @@ export class TunPlaylist extends LitElement {
     }
   }
 
+  async savePlaylist() {
+    const playlistName = prompt('Enter your Playlist name');
+    if (!playlistName) return;
+    try {
+      await savePlaylist(playlistName, this._playlist);
+      this.$pb.publish(PubSubEvents.RefreshPlaylists);
+    } catch (error) {
+      console.warn(`Failed to save playlist [${playlistName}]: ${error.message}`);
+    }
+
+  }
+
+  loadPlaylist = async (name: string) => {
+    this._playlist = await getPlaylist(name);
+  };
+
   selectAndPlay(index: number, file: FileWithHandle) {
     if (index < 0 || this._selected >= this._playlist.length || !file) return;
     this._selected = index;
-    this.$pb.publish(PubSubEvents.PlaySong, file)
+    this.$pb.publish(PubSubEvents.PlaySong, file);
   }
 
   private _checkForEnter(event: KeyboardEvent) {
@@ -71,7 +90,7 @@ export class TunPlaylist extends LitElement {
         this.selectAndPlay(this._selected, this._playlist[this._selected]);
         break;
     }
-  }
+  };
 
   render() {
     return html`
@@ -81,6 +100,7 @@ export class TunPlaylist extends LitElement {
           </p>
           <menu>
             <button tabindex="0" @click="${() => this.loadSongs()}">Add Items</button>
+            ${this._playlist.length > 0 ? html`<button tabindex="1" @click="${() => this.savePlaylist()}">Save Playlist</button>` : ''}
           </menu>
         </header>
         <ul

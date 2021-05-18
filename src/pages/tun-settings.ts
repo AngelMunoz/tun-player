@@ -1,18 +1,22 @@
-import { html, css } from 'lit';
+import { html, css, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { MobxLitElement } from '@adobe/lit-mobx';
+import { Page } from '../styles';
 
 @customElement('tun-settings')
-export class TunSettings extends MobxLitElement {
+export class TunSettings extends LitElement {
 
-    render() {
-        return html`
-      <article>
-        <header></header>
-        <aside></aside>
-        <main></main>
-        <footer></footer>
-      </article>
+
+  render() {
+    return html`
+    <article>
+      <header>
+        <h1>Tun Player Settings</h1>
+      </header>
+    </article>
     `;
-    }
+  }
+
+  public static get styles() {
+    return [Page];
+  }
 }
